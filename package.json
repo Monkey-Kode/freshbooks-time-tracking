@@ -8,16 +8,55 @@
   "license": "MIT",
   "commands": [
     {
+      "name": "toggle-timer",
+      "title": "FreshBooks Toggle Timer",
+      "description": "Quickly start or stop your FreshBooks timer",
+      "mode": "no-view",
+      "preferences": [
+        {
+          "name": "showHUD",
+          "type": "checkbox",
+          "default": true,
+          "label": "Show HUD",
+          "title": "Show HUD",
+          "description": "Show HUD notification when toggling timer",
+          "required": false
+        }
+      ]
+    },
+    {
       "name": "start-timer",
-      "title": "Start Timer",
-      "description": "",
-      "mode": "no-view"
+      "title": "FreshBooks Start Timer",
+      "description": "Start a new timer with client, project, and notes",
+      "mode": "view"
     },
     {
       "name": "stop-timer",
-      "title": "Stop Timer",
-      "description": "",
-      "mode": "no-view"
+      "title": "FreshBooks Stop Timer",
+      "description": "Stop the current timer and log time with details",
+      "mode": "view"
+    },
+    {
+      "name": "timer-status",
+      "title": "FreshBooks Timer Status",
+      "description": "Check if timer is running and for how long",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "clientId",
+      "type": "textfield",
+      "title": "OAuth Client ID",
+      "description": "FreshBooks OAuth App Client ID from my.freshbooks.com/#/developer",
+      "required": true
+    },
+    {
+      "name": "clientSecret",
+      "type": "password",
+      "title": "OAuth Client Secret",
+      "description": "FreshBooks OAuth App Client Secret from my.freshbooks.com/#/developer",
+      "required": true
     }
   ],
   "dependencies": {
@@ -38,6 +77,7 @@
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
     "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
-    "publish": "npx @raycast/api@latest publish"
+    "publish": "npx @raycast/api@latest publish",
+    "typecheck": "tsc --noEmit"
   }
 }
