@@ -1,21 +1,49 @@
-import { Form, ActionPanel, Action, showToast, Toast, popToRoot, Icon } from "@raycast/api";
+import {
+  Form,
+  ActionPanel,
+  Action,
+  showToast,
+  Toast,
+  popToRoot,
+  Icon,
+  Detail,
+  launchCommand,
+  LaunchType,
+} from "@raycast/api";
 import { useState } from "react";
+import { useTimer } from "./hooks/useTimer";
 import { freshBooksClient } from "./api/client";
 import { invalidateTimerCache } from "./api/cache";
+import { formatElapsedTime } from "./utils/formatters";
 
 export default function Command() {
+  const { runningTimer, isLoading: isLoadingTimer } = useTimer();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isLoadingTimer && runningTimer) {
+    const elapsed = formatElapsedTime(runningTimer.started_at);
+    return (
+      <Detail
+        markdown={`# Timer Already Running\n\nA timer has been running for **${elapsed}**.\n\nStop and log it before starting a new one.`}
+        actions={
+          <ActionPanel>
+            <Action
+              title="Stop & Log Timer"
+              icon={Icon.Stop}
+              onAction={() => {
+                launchCommand({ name: "stop-timer", type: LaunchType.UserInitiated });
+              }}
+            />
+          </ActionPanel>
+        }
+      />
+    );
+  }
 
   async function handleSubmit(values: { note: string }) {
     setIsSubmitting(true);
 
     try {
-      // Stop any existing running timer before starting a new one
-      const runningTimer = await freshBooksClient.getRunningTimer();
-      if (runningTimer) {
-        await freshBooksClient.stopTimer(runningTimer.id);
-      }
-
       await freshBooksClient.startTimer({
         note: values.note || undefined,
       });
@@ -41,7 +69,7 @@ export default function Command() {
 
   return (
     <Form
-      isLoading={isSubmitting}
+      isLoading={isLoadingTimer || isSubmitting}
       actions={
         <ActionPanel>
           <Action.SubmitForm title="Start Timer" icon={Icon.Play} onSubmit={handleSubmit} />

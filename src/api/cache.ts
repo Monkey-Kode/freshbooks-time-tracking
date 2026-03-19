@@ -50,7 +50,7 @@ export class CacheManager {
 
 export const CacheKeys = {
   CLIENTS: "freshbooks_clients",
-  PROJECTS: "freshbooks_projects",
+  PROJECTS: "freshbooks_projects_v2",
   SERVICES: "freshbooks_services",
   RUNNING_TIMER: "freshbooks_running_timer",
   USER_INFO: "freshbooks_user_info",

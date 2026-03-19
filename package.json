@@ -27,7 +27,7 @@
     {
       "name": "start-timer",
       "title": "FreshBooks Start Timer",
-      "description": "Start a new timer with client, project, and notes",
+      "description": "Start a new FreshBooks timer with an optional note",
       "mode": "view"
     },
     {

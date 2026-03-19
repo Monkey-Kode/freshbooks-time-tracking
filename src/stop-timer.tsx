@@ -1,4 +1,15 @@
-import { Form, ActionPanel, Action, showToast, Toast, popToRoot, Icon, Detail } from "@raycast/api";
+import {
+  Form,
+  ActionPanel,
+  Action,
+  showToast,
+  Toast,
+  popToRoot,
+  Icon,
+  Detail,
+  launchCommand,
+  LaunchType,
+} from "@raycast/api";
 import { useState, useEffect, useMemo } from "react";
 import { useClients, useProjects, useServices } from "./hooks/useApiData";
 import { useTimer } from "./hooks/useTimer";
@@ -10,6 +21,8 @@ export default function Command() {
   const { runningTimer, isLoading: isLoadingTimer } = useTimer();
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [selectedServiceId, setSelectedServiceId] = useState<string>("");
+  const [note, setNote] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_currentTime, setCurrentTime] = useState(Date.now());
@@ -35,15 +48,19 @@ export default function Command() {
       if (runningTimer.project_id) {
         setSelectedProjectId(runningTimer.project_id.toString());
       }
+      if (runningTimer.service_id) {
+        setSelectedServiceId(runningTimer.service_id.toString());
+      }
+      if (runningTimer.note) {
+        setNote(runningTimer.note);
+      }
     }
   }, [runningTimer]);
 
   const filteredServices = useMemo(() => {
     if (selectedProjectId) {
       const project = projects.find((p) => p.id.toString() === selectedProjectId);
-      if (project?.services?.length) {
-        return project.services.filter((s) => s.vis_state === 0);
-      }
+      return (project?.services ?? []).filter((s) => s.vis_state === 0);
     }
     return services;
   }, [selectedProjectId, projects, services]);
@@ -54,7 +71,13 @@ export default function Command() {
         markdown="# No Timer Running\n\nThere is no timer currently running. Start a timer first before you can stop it."
         actions={
           <ActionPanel>
-            <Action title="Start Timer" icon={Icon.Play} onAction={() => popToRoot()} />
+            <Action
+              title="Start Timer"
+              icon={Icon.Play}
+              onAction={() => {
+                launchCommand({ name: "start-timer", type: LaunchType.UserInitiated });
+              }}
+            />
           </ActionPanel>
         }
       />
@@ -127,8 +150,11 @@ export default function Command() {
         title="Client"
         placeholder="Select a client (optional)"
         value={selectedClientId}
-        onChange={setSelectedClientId}
-        defaultValue={runningTimer?.client_id?.toString() || ""}
+        onChange={(val) => {
+          setSelectedClientId(val);
+          setSelectedProjectId("");
+          setSelectedServiceId("");
+        }}
       >
         <Form.Dropdown.Item value="" title="No Client" />
         {clients.map((client) => (
@@ -145,7 +171,10 @@ export default function Command() {
         title="Project"
         placeholder="Select a project (optional)"
         value={selectedProjectId}
-        onChange={setSelectedProjectId}
+        onChange={(val) => {
+          setSelectedProjectId(val);
+          setSelectedServiceId("");
+        }}
       >
         <Form.Dropdown.Item value="" title="No Project" />
         {projects
@@ -159,7 +188,8 @@ export default function Command() {
         id="service_id"
         title="Service"
         placeholder="Select a service (optional)"
-        defaultValue={runningTimer?.service_id?.toString() || ""}
+        value={selectedServiceId}
+        onChange={setSelectedServiceId}
       >
         <Form.Dropdown.Item value="" title="No Service" />
         {filteredServices.map((service) => (
@@ -167,12 +197,7 @@ export default function Command() {
         ))}
       </Form.Dropdown>
 
-      <Form.TextArea
-        id="note"
-        title="Notes"
-        placeholder="What did you work on?"
-        defaultValue={runningTimer?.note || ""}
-      />
+      <Form.TextArea id="note" title="Notes" placeholder="What did you work on?" value={note} onChange={setNote} />
     </Form>
   );
 }

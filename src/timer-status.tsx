@@ -84,7 +84,7 @@ export default function Command() {
                   }}
                 />
                 <Action
-                  title="Start Timer with Details"
+                  title="Start New Timer"
                   icon={Icon.Document}
                   onAction={() => {
                     launchCommand({ name: "start-timer", type: LaunchType.UserInitiated });
