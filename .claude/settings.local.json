@@ -10,7 +10,8 @@
       "Bash(npx tsc:*)",
       "Bash(npm run lint)",
       "Bash(npm run fix-lint)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
