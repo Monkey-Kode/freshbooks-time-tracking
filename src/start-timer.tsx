@@ -40,19 +40,17 @@ export default function Command() {
     );
   }
 
-  async function handleSubmit(values: { note: string }) {
+  async function handleSubmit() {
     setIsSubmitting(true);
 
     try {
-      await freshBooksClient.startTimer({
-        note: values.note || undefined,
-      });
+      await freshBooksClient.startTimer();
       invalidateTimerCache();
 
       await showToast({
         style: Toast.Style.Success,
         title: "Timer Started",
-        message: values.note || "Timer is now running",
+        message: "Timer is now running",
       });
 
       await popToRoot();
@@ -76,7 +74,7 @@ export default function Command() {
         </ActionPanel>
       }
     >
-      <Form.TextArea id="note" title="Notes" placeholder="What are you working on?" />
+      <Form.Description title="" text="Press Enter to start the timer" />
     </Form>
   );
 }

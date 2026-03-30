@@ -133,6 +133,7 @@ export interface CreateTimeEntryData {
 }
 
 export interface UpdateTimeEntryData extends Partial<CreateTimeEntryData> {
+  billable?: boolean;
   timer?: {
     id: string;
   };

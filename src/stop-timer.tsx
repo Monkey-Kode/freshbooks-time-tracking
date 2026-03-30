@@ -22,7 +22,6 @@ export default function Command() {
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
-  const [note, setNote] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_currentTime, setCurrentTime] = useState(Date.now());
@@ -50,9 +49,6 @@ export default function Command() {
       }
       if (runningTimer.service_id) {
         setSelectedServiceId(runningTimer.service_id.toString());
-      }
-      if (runningTimer.note) {
-        setNote(runningTimer.note);
       }
     }
   }, [runningTimer]);
@@ -84,7 +80,13 @@ export default function Command() {
     );
   }
 
-  async function handleSubmit(values: { client_id: string; project_id: string; service_id: string; note: string }) {
+  async function handleSubmit(values: {
+    client_id: string;
+    project_id: string;
+    service_id: string;
+    note: string;
+    billable: boolean;
+  }) {
     if (!runningTimer) return;
 
     setIsSubmitting(true);
@@ -93,6 +95,7 @@ export default function Command() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data: any = {
         note: values.note || undefined,
+        billable: values.billable,
       };
 
       if (values.client_id) {
@@ -197,7 +200,9 @@ export default function Command() {
         ))}
       </Form.Dropdown>
 
-      <Form.TextArea id="note" title="Notes" placeholder="What did you work on?" value={note} onChange={setNote} />
+      <Form.TextArea id="note" title="Notes" placeholder="What did you work on?" />
+
+      <Form.Checkbox id="billable" label="Billable" defaultValue={true} />
     </Form>
   );
 }
