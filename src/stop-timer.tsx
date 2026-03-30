@@ -22,6 +22,7 @@ export default function Command() {
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
+  const [billable, setBillable] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_currentTime, setCurrentTime] = useState(Date.now());
@@ -49,6 +50,9 @@ export default function Command() {
       }
       if (runningTimer.service_id) {
         setSelectedServiceId(runningTimer.service_id.toString());
+      }
+      if (runningTimer.billable !== undefined) {
+        setBillable(runningTimer.billable);
       }
     }
   }, [runningTimer]);
@@ -202,7 +206,7 @@ export default function Command() {
 
       <Form.TextArea id="note" title="Notes" placeholder="What did you work on?" />
 
-      <Form.Checkbox id="billable" label="Billable" defaultValue={true} />
+      <Form.Checkbox id="billable" label="Billable" value={billable} onChange={setBillable} />
     </Form>
   );
 }

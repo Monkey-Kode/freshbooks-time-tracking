@@ -10,9 +10,10 @@
       "Bash(npx tsc:*)",
       "Bash(npm run lint)",
       "Bash(npm run fix-lint)",
-      "Bash(git commit:*)",
+t      "Bash(git commit:*)",
       "Bash(git push:*)",
-      "mcp__Context7__query-docs"
+      "mcp__Context7__query-docs",
+      "Bash(tmux capture-pane:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
