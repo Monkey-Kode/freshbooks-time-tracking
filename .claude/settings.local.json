@@ -10,16 +10,14 @@
       "Bash(npx tsc:*)",
       "Bash(npm run lint)",
       "Bash(npm run fix-lint)",
-t      "Bash(git commit:*)",
+      "Bash(git commit:*)",
       "Bash(git push:*)",
       "mcp__Context7__query-docs",
       "Bash(tmux capture-pane:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "Context7"
-  ],
+  "enabledMcpjsonServers": ["Context7"],
   "hooks": {
     "PostToolUse": [
       {

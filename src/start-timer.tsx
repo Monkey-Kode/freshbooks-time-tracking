@@ -1,30 +1,53 @@
 import {
-  Form,
+  Detail,
   ActionPanel,
   Action,
   showToast,
   Toast,
   popToRoot,
+  showHUD,
   Icon,
-  Detail,
   launchCommand,
   LaunchType,
 } from "@raycast/api";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTimer } from "./hooks/useTimer";
 import { freshBooksClient } from "./api/client";
 import { invalidateTimerCache } from "./api/cache";
-import { formatElapsedTime } from "./utils/formatters";
 
 export default function Command() {
-  const { runningTimer, isLoading: isLoadingTimer } = useTimer();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { runningTimer, isLoading } = useTimer();
+  const [starting, setStarting] = useState(false);
+  const started = useRef(false);
 
-  if (!isLoadingTimer && runningTimer) {
-    const elapsed = formatElapsedTime(runningTimer.started_at);
+  useEffect(() => {
+    if (isLoading || started.current) return;
+    if (runningTimer) return;
+
+    started.current = true;
+    setStarting(true);
+
+    freshBooksClient
+      .startTimer()
+      .then(() => {
+        invalidateTimerCache();
+        return showHUD("Timer Started");
+      })
+      .then(() => popToRoot())
+      .catch((error) => {
+        showToast({
+          style: Toast.Style.Failure,
+          title: "Failed to start timer",
+          message: error instanceof Error ? error.message : String(error),
+        });
+        setStarting(false);
+      });
+  }, [isLoading, runningTimer]);
+
+  if (!isLoading && runningTimer) {
     return (
       <Detail
-        markdown={`# Timer Already Running\n\nA timer has been running for **${elapsed}**.\n\nStop and log it before starting a new one.`}
+        markdown="# Timer Already Running\n\nStop and log the current timer before starting a new one."
         actions={
           <ActionPanel>
             <Action
@@ -40,41 +63,5 @@ export default function Command() {
     );
   }
 
-  async function handleSubmit() {
-    setIsSubmitting(true);
-
-    try {
-      await freshBooksClient.startTimer();
-      invalidateTimerCache();
-
-      await showToast({
-        style: Toast.Style.Success,
-        title: "Timer Started",
-        message: "Timer is now running",
-      });
-
-      await popToRoot();
-    } catch (error) {
-      await showToast({
-        style: Toast.Style.Failure,
-        title: "Failed to start timer",
-        message: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <Form
-      isLoading={isLoadingTimer || isSubmitting}
-      actions={
-        <ActionPanel>
-          <Action.SubmitForm title="Start Timer" icon={Icon.Play} onSubmit={handleSubmit} />
-        </ActionPanel>
-      }
-    >
-      <Form.Description title="" text="Press Enter to start the timer" />
-    </Form>
-  );
+  return <Detail isLoading={isLoading || starting} markdown="" />;
 }

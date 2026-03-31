@@ -17,6 +17,15 @@ export default function Command() {
   }, []);
 
   const getTimerStatus = () => {
+    if (isLoading) {
+      return {
+        title: "Loading Timer Status…",
+        subtitle: "",
+        icon: { source: Icon.Clock, tintColor: Color.SecondaryText },
+        accessories: [],
+      };
+    }
+
     if (!runningTimer) {
       return {
         title: "No Timer Running",
@@ -54,6 +63,7 @@ export default function Command() {
       <List.Item
         {...status}
         actions={
+          !isLoading ? (
           <ActionPanel>
             {runningTimer ? (
               <>
@@ -99,6 +109,7 @@ export default function Command() {
               shortcut={{ modifiers: ["cmd"], key: "r" }}
             />
           </ActionPanel>
+          ) : undefined
         }
       />
     </List>
